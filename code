@@ -1,11 +1,10 @@
 import sqlite3
 import datetime
 
-# Step 1: Connect to the database
 def connect_db():
     return sqlite3.connect('inventory.db')
 
-# Step 2: Create tables
+
 def create_tables(conn):
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS inventory
@@ -16,14 +15,12 @@ def create_tables(conn):
                        last_updated DATE)''')
     conn.commit()
 
-# Step 3: Add new item
 def add_item(conn, item_name, stock_level, reorder_level):
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO inventory (item_name, stock_level, reorder_level, last_updated)
                       VALUES (?, ?, ?, ?)''', (item_name, stock_level, reorder_level, datetime.date.today()))
     conn.commit()
 
-# Step 4: Update stock levels
 def update_stock(conn, item_id, new_stock_level):
     cursor = conn.cursor()
     cursor.execute('''UPDATE inventory
@@ -31,19 +28,16 @@ def update_stock(conn, item_id, new_stock_level):
                       WHERE id = ?''', (new_stock_level, datetime.date.today(), item_id))
     conn.commit()
 
-# Step 5: Fetch stock levels
 def fetch_stock(conn):
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM inventory''')
     return cursor.fetchall()
 
-# Step 6: Check reorder points
 def check_reorder(conn):
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM inventory WHERE stock_level < reorder_level''')
     return cursor.fetchall()
 
-# Step 7: Generate reports
 def generate_report(conn):
     stock_data = fetch_stock(conn)
     for item in stock_data:
@@ -53,18 +47,14 @@ def generate_report(conn):
     for item in items_to_reorder:
         print(f"Item: {item[1]}, Stock Level: {item[2]}, Reorder Level: {item[3]}")
 
-# Example Usage
 conn = connect_db()
 create_tables(conn)
 
-# Adding items
 add_item(conn, 'Widget A', 50, 10)
 add_item(conn, 'Widget B', 20, 5)
 
-# Update stock levels
-update_stock(conn, 1, 8)  # Assuming item with id=1 is 'Widget A'
+update_stock(conn, 1, 8) 
 
-# Generate report and check reorder
 generate_report(conn)
 
 conn.close()
